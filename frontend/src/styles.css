@@ -1,0 +1,260 @@
+:root {
+  color: #1c1917;
+  background: #efe8dc;
+  font-family: "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+  line-height: 1.45;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.app {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 20px 40px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: -0.03em;
+}
+
+.hint {
+  margin: 6px 0 0;
+  color: #57534e;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.search {
+  flex: 1;
+  border: 1px solid #d6d3d1;
+  background: #fffdf8;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.search:focus {
+  outline: 2px solid #1f4d3a;
+  border-color: transparent;
+}
+
+.primary,
+.secondary {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.primary {
+  background: #1f4d3a;
+  color: #f7f3ee;
+}
+
+.secondary {
+  background: transparent;
+  color: #44403c;
+}
+
+.primary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.error {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fde8e4;
+  color: #9f1239;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.column {
+  min-height: 420px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #f7f3ee;
+}
+
+.column.todo {
+  background: #f6f1e7;
+}
+
+.column.doing {
+  background: #e5f0e8;
+}
+
+.column.done {
+  background: #e6eef6;
+}
+
+.column.over {
+  outline: 2px solid #1f4d3a;
+}
+
+.column header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.column h2 {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.count {
+  min-width: 24px;
+  text-align: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 2px 8px;
+  font-size: 13px;
+}
+
+.column-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.empty {
+  margin: 24px 0;
+  text-align: center;
+  color: #78716c;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 12px 12px 10px;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.08);
+  cursor: grab;
+}
+
+.card.dragging {
+  opacity: 0.35;
+}
+
+.card.overlay {
+  width: 280px;
+  cursor: grabbing;
+  box-shadow: 0 12px 30px rgba(28, 25, 23, 0.16);
+}
+
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.card p {
+  margin: 0;
+  color: #44403c;
+  white-space: pre-wrap;
+}
+
+.score {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #ecfccb;
+  color: #3f6212;
+  font-size: 12px;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 25, 23, 0.35);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.modal {
+  width: min(440px, 100%);
+  background: #fffdf8;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.modal h2 {
+  margin: 0 0 14px;
+}
+
+.modal label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.modal input,
+.modal textarea {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid #d6d3d1;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: white;
+}
+
+.modal textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+@media (max-width: 800px) {
+  .toolbar,
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .board {
+    grid-template-columns: 1fr;
+  }
+}

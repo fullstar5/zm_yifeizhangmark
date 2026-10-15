@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "workspaces": ["backend", "frontend"],
+  "scripts": {
+    "test": "sh scripts/compose.sh up -d --wait && npm test --prefix backend && npm test --prefix frontend && npm run check --prefix backend && npm run build --prefix frontend"
+  }
+}
