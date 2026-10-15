@@ -64,7 +64,7 @@ export function createApp(embedder: Embedder = defaultEmbedder) {
         return;
       }
       const embedding = await embedder.embedQuery(query);
-      res.json({ cards: await searchCards(embedding) });
+      res.json({ cards: await searchCards(embedding, query) });
     } catch (error) {
       next(error);
     }

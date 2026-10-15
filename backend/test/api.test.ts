@@ -166,6 +166,29 @@ describe("看板 API", () => {
     expect(unrelated.body.cards).toEqual([]);
   });
 
+  it("一两个单词能靠标题或描述里的整词命中", async () => {
+    await request(app).post("/api/cards").send({
+      title: "Setup project repository",
+      description: "Initialize Vite + React template with Tailwind CSS and ESLint configuration.",
+    });
+    await request(app).post("/api/cards").send({
+      title: "Update billing invoice",
+      description: "Receipt total looks wrong",
+    });
+
+    const byTitle = await request(app).post("/api/search").send({ query: "project" });
+    expect(byTitle.status).toBe(200);
+    expect(byTitle.body.cards.map((card: { title: string }) => card.title)).toEqual([
+      "Setup project repository",
+    ]);
+    expect(byTitle.body.cards[0].score).toBeGreaterThan(0.5);
+
+    const byDescription = await request(app).post("/api/search").send({ query: "eslint" });
+    expect(byDescription.body.cards.map((card: { title: string }) => card.title)).toEqual([
+      "Setup project repository",
+    ]);
+  });
+
   it("空搜索不调用嵌入，没有 Key 时列表仍可读、创建和搜索失败", async () => {
     await request(app).post("/api/cards").send({
       title: "Fix login failure",

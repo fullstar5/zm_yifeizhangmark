@@ -23,7 +23,7 @@ export function CardItem({ card, showScore }: CardItemProps) {
     >
       <h3>{card.title}</h3>
       {card.description ? <p>{card.description}</p> : null}
-      {showScore && card.score !== undefined ? (
+      {showScore && card.score !== undefined && Number.isFinite(card.score) ? (
         <span className="score">{Math.round(card.score * 100)}% 相似</span>
       ) : null}
     </article>
@@ -35,7 +35,7 @@ export function CardPreview({ card, showScore }: CardItemProps) {
     <article className="card overlay">
       <h3>{card.title}</h3>
       {card.description ? <p>{card.description}</p> : null}
-      {showScore && card.score !== undefined ? (
+      {showScore && card.score !== undefined && Number.isFinite(card.score) ? (
         <span className="score">{Math.round(card.score * 100)}% 相似</span>
       ) : null}
     </article>

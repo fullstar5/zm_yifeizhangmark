@@ -1,8 +1,7 @@
 import pg from "pg";
 import { toVectorLiteral } from "./embed.js";
+import { rankMatch } from "./search.js";
 import { Card, HttpError, Status } from "./types.js";
-
-const SCORE_THRESHOLD = 0.20;
 
 let pool: pg.Pool | undefined;
 
@@ -116,14 +115,19 @@ function isInvalidText(error: unknown): boolean {
   return typeof error === "object" && error !== null && "code" in error && error.code === "22P02";
 }
 
-export async function searchCards(embedding: number[]): Promise<Card[]> {
+export async function searchCards(embedding: number[], query: string): Promise<Card[]> {
   const result = await getPool().query<CardRow>(
     `SELECT id, title, description, status, created_at,
             1 - (embedding <=> $1::vector) AS score
-     FROM cards
-     WHERE 1 - (embedding <=> $1::vector) >= $2
-     ORDER BY embedding <=> $1`,
-    [toVectorLiteral(embedding), SCORE_THRESHOLD],
+     FROM cards`,
+    [toVectorLiteral(embedding)],
   );
-  return result.rows.map((row) => toCard(row, true));
+  return result.rows
+    .map((row) => {
+      const ranked = rankMatch(Number(row.score), row.title, row.description, query);
+      return { card: toCard({ ...row, score: ranked.score }, true), include: ranked.include };
+    })
+    .filter((item) => item.include)
+    .sort((left, right) => (right.card.score ?? 0) - (left.card.score ?? 0))
+    .map((item) => item.card);
 }

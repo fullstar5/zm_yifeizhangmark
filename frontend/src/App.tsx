@@ -8,7 +8,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, Status, listCards, moveCard, searchCards } from "./api";
 import { CardPreview } from "./components/CardItem";
 import { Column } from "./components/Column";
@@ -31,20 +31,24 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const loadSeq = useRef(0);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const searching = query.trim().length > 0;
   const activeCard = cards.find((card) => card.id === activeId) ?? null;
 
   useEffect(() => {
     const trimmed = query.trim();
+    const seq = ++loadSeq.current;
     const handle = window.setTimeout(() => {
       const request = trimmed ? searchCards(trimmed) : listCards();
       request
         .then((result) => {
+          if (loadSeq.current !== seq) return;
           setCards(result.cards);
           setError(null);
         })
         .catch((caught: unknown) => {
+          if (loadSeq.current !== seq) return;
           setError(caught instanceof Error ? caught.message : "加载失败");
         });
     }, trimmed ? 400 : 0);
@@ -60,14 +64,16 @@ export default function App() {
     const nextStatus = event.over ? String(event.over.id) : "";
     if (!isStatus(nextStatus)) return;
     const cardId = String(event.active.id);
-    const current = cards.find((card) => card.id === cardId);
-    if (!current || current.status === nextStatus) return;
-
     const previous = cards;
-    setCards(cards.map((card) => (card.id === cardId ? { ...card, status: nextStatus } : card)));
+    const card = previous.find((item) => item.id === cardId);
+    if (!card || card.status === nextStatus) return;
+
+    const seq = ++loadSeq.current;
+    setCards(previous.map((item) => (item.id === cardId ? { ...item, status: nextStatus } : item)));
     try {
       await moveCard(cardId, nextStatus);
     } catch (caught) {
+      if (loadSeq.current !== seq) return;
       setCards(previous);
       setError(caught instanceof Error ? caught.message : "移动失败");
     }
@@ -75,11 +81,18 @@ export default function App() {
 
   async function onCreate(title: string, description: string) {
     await createCard(title, description);
+    const seq = ++loadSeq.current;
     setQuery("");
     setModalOpen(false);
-    const result = await listCards();
-    setCards(result.cards);
-    setError(null);
+    try {
+      const result = await listCards();
+      if (loadSeq.current !== seq) return;
+      setCards(result.cards);
+      setError(null);
+    } catch (caught) {
+      if (loadSeq.current !== seq) return;
+      setError(caught instanceof Error ? caught.message : "加载失败");
+    }
   }
 
   return (
